@@ -1,0 +1,43 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-GB": {
+          "name": "Jarvis",
+          "summary": "Control the TV's Ambient screen.",
+          "description": "Private skill: music, notes, reminders and weather on the TV's Ambient screen.",
+          "examplePhrases": [
+            "Alexa, ask Jarvis to play Cheques by Shubh",
+            "Alexa, ask Jarvis to remind me at seven to call mum",
+            "Alexa, ask Jarvis what's the weather"
+          ]
+        }
+      },
+      "isAvailableWorldwide": false,
+      "distributionCountries": [
+        "GB"
+      ],
+      "category": "SMART_HOME",
+      "testingInstructions": "Private skill for the developer's own TV."
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "https://jarvis-relay.YOUR-SUBDOMAIN.workers.dev/alexa",
+          "sslCertificateType": "Wildcard"
+        }
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "usesPersonalInfo": false,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "containsAds": false,
+      "locales": {
+        "en-GB": {}
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+# Keys and machine-specific files: never commit these
+tonight/secrets.properties
+**/local.properties
+tools/adbkey/
+.halo/
+*.keystore
+*.jks
+.dev.vars
+.env
+.env.*
+
+# Build output
+**/build/
+**/.gradle/
+.idea/
+*.iml
+tools/venv/
+jarvis/relay/.wrangler/
+jarvis/relay/node_modules/
+.DS_Store

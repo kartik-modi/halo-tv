@@ -1,0 +1,17 @@
+name = "jarvis-relay"
+main = "src/index.js"
+compatibility_date = "2025-06-01"
+
+[[durable_objects.bindings]]
+name = "RELAY"
+class_name = "Relay"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Relay"]
+
+# Secrets, set with `wrangler secret put`:
+#   TV_KEY     shared with the TV; it must send this to collect commands
+#   PHONE_KEY  the phone's "Talk to Jarvis" page sends this (jarvis/setup-relay.sh sets both)
+#   SKILL_ID  the Alexa skill's id; requests from any other skill are refused
+#   TONIGHT_SKILL_ID  the Tonight Alexa skill's id; requests from any other skill are refused

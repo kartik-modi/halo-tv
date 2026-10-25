@@ -1,0 +1,6 @@
+# API keys: built into the app on the TV, never committed
+secrets.properties
+local.properties
+.gradle/
+build/
+app/build/

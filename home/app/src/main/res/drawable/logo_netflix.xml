@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- netflix: Simple Icons (CC0), drawn white for the glass Home (glass_logos). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="13.20dp" android:height="24.00dp" android:viewportWidth="13.204" android:viewportHeight="24">
+    <group android:translateX="-5.398" android:translateY="0">
+    <path android:fillColor="#FFFFFFFF" android:pathData="M 5.398 0 v .006 c 3.028 8.556 5.37 15.175 8.348 23.596 c 2.344 .058 4.85 .398 4.854 .398 c -2.8 -7.924 -5.923 -16.747 -8.487 -24 z m 8.489 0 v 9.63 L 18.6 22.951 c -.043 -7.86 -.004 -15.913 .002 -22.95 z M 5.398 1.05 V 24 c 1.873 -.225 2.81 -.312 4.715 -.398 v -9.22 z" />
+    </group>
+</vector>

@@ -1,0 +1,1232 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "jarvis",
+      "intents": [
+        {
+          "name": "PlayIntent",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "play {query}",
+            "to play {query}",
+            "put on {query}",
+            "to put on {query}",
+            "play me {query}",
+            "to play me {query}"
+          ]
+        },
+        {
+          "name": "QueueIntent",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "queue {query}",
+            "to queue {query}",
+            "add {query} to the queue",
+            "to add {query} to the queue",
+            "play {query} next",
+            "to play {query} next"
+          ]
+        },
+        {
+          "name": "NoteIntent",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "add a note {query}",
+            "to add a note {query}",
+            "note {query}",
+            "to note {query}",
+            "make a note {query}",
+            "to make a note {query}",
+            "write {query}",
+            "to write {query}"
+          ]
+        },
+        {
+          "name": "RemindIntent",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "remind me {query}",
+            "to remind me {query}",
+            "set a reminder {query}",
+            "to set a reminder {query}"
+          ]
+        },
+        {
+          "name": "CommandIntent",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "to {query}",
+            "please {query}",
+            "can you {query}",
+            "could you {query}"
+          ]
+        },
+        {
+          "name": "AMAZON.PauseIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ResumeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NextIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PreviousIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StartOverIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "DoneIntent",
+          "samples": [
+            "that's all",
+            "that is all",
+            "nothing else",
+            "no thanks",
+            "no thank you",
+            "i'm done",
+            "bye",
+            "goodbye",
+            "thanks jarvis",
+            "thank you jarvis"
+          ]
+        },
+        {
+          "name": "L_who",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "who {query}"
+          ]
+        },
+        {
+          "name": "L_whos",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "whos {query}"
+          ]
+        },
+        {
+          "name": "L_what",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "what {query}"
+          ]
+        },
+        {
+          "name": "L_whats",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "whats {query}"
+          ]
+        },
+        {
+          "name": "L_what_is",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "what is {query}"
+          ]
+        },
+        {
+          "name": "L_what_are",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "what are {query}"
+          ]
+        },
+        {
+          "name": "L_when",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "when {query}"
+          ]
+        },
+        {
+          "name": "L_where",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "where {query}"
+          ]
+        },
+        {
+          "name": "L_wheres",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "wheres {query}"
+          ]
+        },
+        {
+          "name": "L_why",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "why {query}"
+          ]
+        },
+        {
+          "name": "L_which",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "which {query}"
+          ]
+        },
+        {
+          "name": "L_how",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "how {query}"
+          ]
+        },
+        {
+          "name": "L_hows",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "hows {query}"
+          ]
+        },
+        {
+          "name": "L_how_many",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "how many {query}"
+          ]
+        },
+        {
+          "name": "L_how_much",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "how much {query}"
+          ]
+        },
+        {
+          "name": "L_how_long",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "how long {query}"
+          ]
+        },
+        {
+          "name": "L_how_far",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "how far {query}"
+          ]
+        },
+        {
+          "name": "L_how_old",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "how old {query}"
+          ]
+        },
+        {
+          "name": "L_is",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "is {query}"
+          ]
+        },
+        {
+          "name": "L_are",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "are {query}"
+          ]
+        },
+        {
+          "name": "L_was",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "was {query}"
+          ]
+        },
+        {
+          "name": "L_were",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "were {query}"
+          ]
+        },
+        {
+          "name": "L_do",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "do {query}"
+          ]
+        },
+        {
+          "name": "L_does",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "does {query}"
+          ]
+        },
+        {
+          "name": "L_did",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "did {query}"
+          ]
+        },
+        {
+          "name": "L_can",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "can {query}"
+          ]
+        },
+        {
+          "name": "L_could",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "could {query}"
+          ]
+        },
+        {
+          "name": "L_should",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "should {query}"
+          ]
+        },
+        {
+          "name": "L_would",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "would {query}"
+          ]
+        },
+        {
+          "name": "L_will",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "will {query}"
+          ]
+        },
+        {
+          "name": "L_is_there",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "is there {query}"
+          ]
+        },
+        {
+          "name": "L_are_there",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "are there {query}"
+          ]
+        },
+        {
+          "name": "L_do_you_know",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "do you know {query}"
+          ]
+        },
+        {
+          "name": "L_have_i",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "have i {query}"
+          ]
+        },
+        {
+          "name": "L_am_i",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "am i {query}"
+          ]
+        },
+        {
+          "name": "AnythingIntent",
+          "slots": [
+            {
+              "name": "text",
+              "type": "ANYTHING"
+            }
+          ],
+          "samples": [
+            "{text}"
+          ]
+        }
+      ],
+      "types": [
+        {
+          "name": "ANYTHING",
+          "values": [
+            {
+              "name": {
+                "value": "good morning"
+              }
+            },
+            {
+              "name": {
+                "value": "good night"
+              }
+            },
+            {
+              "name": {
+                "value": "thank you"
+              }
+            },
+            {
+              "name": {
+                "value": "i'm bored"
+              }
+            },
+            {
+              "name": {
+                "value": "i'm feeling tired today"
+              }
+            },
+            {
+              "name": {
+                "value": "my sister is visiting next weekend"
+              }
+            },
+            {
+              "name": {
+                "value": "my name is alex"
+              }
+            },
+            {
+              "name": {
+                "value": "i don't like jazz"
+              }
+            },
+            {
+              "name": {
+                "value": "i love old bollywood songs"
+              }
+            },
+            {
+              "name": {
+                "value": "i had a long day at work"
+              }
+            },
+            {
+              "name": {
+                "value": "we're having friends over for dinner tonight"
+              }
+            },
+            {
+              "name": {
+                "value": "my mum's birthday is on the twelfth of march"
+              }
+            },
+            {
+              "name": {
+                "value": "i'm going to the gym in the morning"
+              }
+            },
+            {
+              "name": {
+                "value": "i think it's going to rain"
+              }
+            },
+            {
+              "name": {
+                "value": "that was a great film"
+              }
+            },
+            {
+              "name": {
+                "value": "surprise me"
+              }
+            },
+            {
+              "name": {
+                "value": "cheer me up"
+              }
+            },
+            {
+              "name": {
+                "value": "motivate me"
+              }
+            },
+            {
+              "name": {
+                "value": "sing me something"
+              }
+            },
+            {
+              "name": {
+                "value": "say something funny"
+              }
+            },
+            {
+              "name": {
+                "value": "let's talk"
+              }
+            },
+            {
+              "name": {
+                "value": "i can't sleep"
+              }
+            },
+            {
+              "name": {
+                "value": "i'm hungry"
+              }
+            },
+            {
+              "name": {
+                "value": "i'm out of milk"
+              }
+            },
+            {
+              "name": {
+                "value": "my flight is at six tomorrow morning"
+              }
+            },
+            {
+              "name": {
+                "value": "the kids are asleep"
+              }
+            },
+            {
+              "name": {
+                "value": "dinner is at eight"
+              }
+            },
+            {
+              "name": {
+                "value": "it's my anniversary next week"
+              }
+            },
+            {
+              "name": {
+                "value": "i need a recipe for pasta with what's in the fridge"
+              }
+            },
+            {
+              "name": {
+                "value": "give me a quote"
+              }
+            },
+            {
+              "name": {
+                "value": "flip a coin"
+              }
+            },
+            {
+              "name": {
+                "value": "roll a dice"
+              }
+            },
+            {
+              "name": {
+                "value": "pick a number between one and ten"
+              }
+            },
+            {
+              "name": {
+                "value": "translate good morning into hindi"
+              }
+            },
+            {
+              "name": {
+                "value": "spell necessary"
+              }
+            },
+            {
+              "name": {
+                "value": "define serendipity"
+              }
+            },
+            {
+              "name": {
+                "value": "convert five miles to kilometres"
+              }
+            },
+            {
+              "name": {
+                "value": "the heating is too high"
+              }
+            },
+            {
+              "name": {
+                "value": "it's cold in here"
+              }
+            },
+            {
+              "name": {
+                "value": "it's too loud"
+              }
+            },
+            {
+              "name": {
+                "value": "lights off"
+              }
+            },
+            {
+              "name": {
+                "value": "movie night"
+              }
+            },
+            {
+              "name": {
+                "value": "party mode"
+              }
+            },
+            {
+              "name": {
+                "value": "bedtime"
+              }
+            },
+            {
+              "name": {
+                "value": "morning routine"
+              }
+            },
+            {
+              "name": {
+                "value": "i'm leaving now"
+              }
+            },
+            {
+              "name": {
+                "value": "i'm home"
+              }
+            },
+            {
+              "name": {
+                "value": "nobody's home this weekend"
+              }
+            },
+            {
+              "name": {
+                "value": "shuffle my favourites"
+              }
+            },
+            {
+              "name": {
+                "value": "something chill"
+              }
+            },
+            {
+              "name": {
+                "value": "something upbeat for cooking"
+              }
+            },
+            {
+              "name": {
+                "value": "the song from the last time"
+              }
+            },
+            {
+              "name": {
+                "value": "anything by the weeknd"
+              }
+            },
+            {
+              "name": {
+                "value": "more like this"
+              }
+            },
+            {
+              "name": {
+                "value": "not this one"
+              }
+            },
+            {
+              "name": {
+                "value": "i didn't like that song"
+              }
+            },
+            {
+              "name": {
+                "value": "that's my favourite"
+              }
+            },
+            {
+              "name": {
+                "value": "my favourite colour is blue"
+              }
+            },
+            {
+              "name": {
+                "value": "my wife's name is anna"
+              }
+            },
+            {
+              "name": {
+                "value": "my dog is called bruno"
+              }
+            },
+            {
+              "name": {
+                "value": "i work from home on mondays"
+              }
+            },
+            {
+              "name": {
+                "value": "i'm vegetarian"
+              }
+            },
+            {
+              "name": {
+                "value": "i'm allergic to peanuts"
+              }
+            },
+            {
+              "name": {
+                "value": "we support liverpool"
+              }
+            },
+            {
+              "name": {
+                "value": "the match starts at three"
+              }
+            },
+            {
+              "name": {
+                "value": "who won the match yesterday"
+              }
+            },
+            {
+              "name": {
+                "value": "any news on the election"
+              }
+            },
+            {
+              "name": {
+                "value": "brief me"
+              }
+            },
+            {
+              "name": {
+                "value": "catch me up"
+              }
+            },
+            {
+              "name": {
+                "value": "read me the headlines"
+              }
+            },
+            {
+              "name": {
+                "value": "anything happening in london this weekend"
+              }
+            },
+            {
+              "name": {
+                "value": "plan my evening"
+              }
+            },
+            {
+              "name": {
+                "value": "help me decide what to watch"
+              }
+            },
+            {
+              "name": {
+                "value": "i can't decide between pizza and curry"
+              }
+            },
+            {
+              "name": {
+                "value": "write a short poem about the rain"
+              }
+            },
+            {
+              "name": {
+                "value": "tell a story for the kids"
+              }
+            },
+            {
+              "name": {
+                "value": "quiz me"
+              }
+            },
+            {
+              "name": {
+                "value": "let's play a game"
+              }
+            },
+            {
+              "name": {
+                "value": "riddle me this"
+              }
+            },
+            {
+              "name": {
+                "value": "i'm stressed"
+              }
+            },
+            {
+              "name": {
+                "value": "breathing exercise"
+              }
+            },
+            {
+              "name": {
+                "value": "remind me what i asked earlier"
+              }
+            },
+            {
+              "name": {
+                "value": "what did i say about my sister"
+              }
+            },
+            {
+              "name": {
+                "value": "never mind"
+              }
+            },
+            {
+              "name": {
+                "value": "actually make it louder"
+              }
+            },
+            {
+              "name": {
+                "value": "and tomorrow"
+              }
+            },
+            {
+              "name": {
+                "value": "the other one"
+              }
+            },
+            {
+              "name": {
+                "value": "same again"
+              }
+            },
+            {
+              "name": {
+                "value": "one more"
+              }
+            },
+            {
+              "name": {
+                "value": "yes please"
+              }
+            },
+            {
+              "name": {
+                "value": "no thanks"
+              }
+            },
+            {
+              "name": {
+                "value": "maybe later"
+              }
+            },
+            {
+              "name": {
+                "value": "okay"
+              }
+            },
+            {
+              "name": {
+                "value": "sure"
+              }
+            },
+            {
+              "name": {
+                "value": "go on"
+              }
+            },
+            {
+              "name": {
+                "value": "carry on"
+              }
+            },
+            {
+              "name": {
+                "value": "keep going"
+              }
+            },
+            {
+              "name": {
+                "value": "start again"
+              }
+            },
+            {
+              "name": {
+                "value": "from the beginning"
+              }
+            },
+            {
+              "name": {
+                "value": "louder"
+              }
+            },
+            {
+              "name": {
+                "value": "quieter"
+              }
+            },
+            {
+              "name": {
+                "value": "mute"
+              }
+            },
+            {
+              "name": {
+                "value": "unmute"
+              }
+            },
+            {
+              "name": {
+                "value": "faster"
+              }
+            },
+            {
+              "name": {
+                "value": "slower"
+              }
+            },
+            {
+              "name": {
+                "value": "again"
+              }
+            },
+            {
+              "name": {
+                "value": "coffee time"
+              }
+            },
+            {
+              "name": {
+                "value": "tea break"
+              }
+            },
+            {
+              "name": {
+                "value": "lunch"
+              }
+            },
+            {
+              "name": {
+                "value": "time for bed"
+              }
+            },
+            {
+              "name": {
+                "value": "wake me at seven"
+              }
+            },
+            {
+              "name": {
+                "value": "set the mood"
+              }
+            },
+            {
+              "name": {
+                "value": "romantic dinner music"
+              }
+            },
+            {
+              "name": {
+                "value": "rainy day playlist"
+              }
+            },
+            {
+              "name": {
+                "value": "music for studying"
+              }
+            },
+            {
+              "name": {
+                "value": "focus mode"
+              }
+            },
+            {
+              "name": {
+                "value": "do not disturb"
+              }
+            },
+            {
+              "name": {
+                "value": "happy birthday to my brother"
+              }
+            },
+            {
+              "name": {
+                "value": "congratulate my team"
+              }
+            },
+            {
+              "name": {
+                "value": "we got engaged"
+              }
+            },
+            {
+              "name": {
+                "value": "i passed my exam"
+              }
+            },
+            {
+              "name": {
+                "value": "i lost my keys"
+              }
+            },
+            {
+              "name": {
+                "value": "i feel lonely"
+              }
+            },
+            {
+              "name": {
+                "value": "i miss my family"
+              }
+            },
+            {
+              "name": {
+                "value": "good job jarvis"
+              }
+            },
+            {
+              "name": {
+                "value": "you're brilliant"
+              }
+            },
+            {
+              "name": {
+                "value": "that's wrong"
+              }
+            },
+            {
+              "name": {
+                "value": "try again"
+              }
+            },
+            {
+              "name": {
+                "value": "speak slower"
+              }
+            },
+            {
+              "name": {
+                "value": "say that again"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

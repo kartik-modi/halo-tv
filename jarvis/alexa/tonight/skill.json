@@ -1,0 +1,39 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-GB": {
+          "name": "Tonight",
+          "summary": "Search everything on Netflix, Prime Video and Disney+ on the TV.",
+          "description": "Private skill: searches the TONIGHT. app's index of every film and series on UK Netflix, Prime Video and Disney+, and shows the results on the TV.",
+          "examplePhrases": [
+            "Alexa, ask Tonight to search for Inception",
+            "Alexa, ask Tonight to find Stranger Things",
+            "Alexa, open Tonight"
+          ]
+        }
+      },
+      "isAvailableWorldwide": false,
+      "distributionCountries": ["GB"],
+      "category": "MOVIE_INFO_AND_REVIEWS",
+      "testingInstructions": "Private skill for the developer's own TV."
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "https://jarvis-relay.YOUR-SUBDOMAIN.workers.dev/tonight/alexa",
+          "sslCertificateType": "Wildcard"
+        }
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "usesPersonalInfo": false,
+      "isChildDirected": false,
+      "isExportCompliant": true,
+      "containsAds": false,
+      "locales": { "en-GB": {} }
+    }
+  }
+}

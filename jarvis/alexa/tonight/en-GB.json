@@ -1,0 +1,69 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "tonight",
+      "intents": [
+        {
+          "name": "SearchIntent",
+          "slots": [
+            {
+              "name": "query",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "search for {query}",
+            "to search for {query}",
+            "search {query}",
+            "to search {query}",
+            "find {query}",
+            "to find {query}",
+            "find me {query}",
+            "to find me {query}",
+            "look for {query}",
+            "to look for {query}",
+            "look up {query}",
+            "to look up {query}",
+            "show me {query}",
+            "to show me {query}",
+            "show {query}",
+            "to show {query}",
+            "pull up {query}",
+            "to pull up {query}",
+            "bring up {query}",
+            "to bring up {query}",
+            "get {query}",
+            "to get {query}",
+            "for {query}",
+            "where can i watch {query}",
+            "where is {query}",
+            "is {query} on",
+            "whether {query} is on",
+            "if {query} is on"
+          ]
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        }
+      ],
+      "types": []
+    }
+  }
+}

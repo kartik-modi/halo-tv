@@ -1,0 +1,53 @@
+plugins {
+    id 'com.android.application'
+}
+
+// TMDB and Anthropic keys live in tonight/secrets.properties (git-ignored) and are built into the app.
+def secrets = new Properties()
+def secretsFile = rootProject.file('secrets.properties')
+if (secretsFile.exists()) secretsFile.withInputStream { secrets.load(it) }
+
+android {
+    namespace 'com.kartikmodi.halo.tonight'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.kartikmodi.halo.tonight'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+        buildConfigField 'String', 'TMDB_TOKEN', "\"${secrets.getProperty('tmdb.token', '')}\""
+        buildConfigField 'String', 'ANTHROPIC_KEY', "\"${secrets.getProperty('anthropic.key', '')}\""
+        buildConfigField 'String', 'REGION', "\"${secrets.getProperty('region', 'US').trim().toUpperCase()}\""
+        buildConfigField 'String', 'SEARCH_URL', "\"${secrets.getProperty('search.url', '')}\""
+        buildConfigField 'String', 'SEARCH_KEY', "\"${secrets.getProperty('search.key', '')}\""
+    }
+
+    buildFeatures { buildConfig true }
+
+    buildTypes {
+        release {
+            // No shrinking: the Anthropic SDK serialises with Jackson, which needs its classes intact.
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    packagingOptions {
+        resources {
+            // Keep kotlin/** and the .kotlin_module files: the Anthropic SDK reads Kotlin's metadata at runtime.
+            excludes += ['META-INF/*.version', 'META-INF/LICENSE*', 'META-INF/NOTICE*',
+                         'META-INF/DEPENDENCIES', 'META-INF/INDEX.LIST', 'META-INF/versions/**', 'DebugProbesKt.bin']
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'com.anthropic:anthropic-java:2.34.0'
+}
