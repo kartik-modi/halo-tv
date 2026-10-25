@@ -4,7 +4,8 @@
 # written only to git-ignored files on this computer.
 #
 #   ./install.sh                     interactive
-#   TV_HOST=192.168.1.50 TMDB_TOKEN=... REGION=US ./install.sh --yes      no prompts (for agents / CI)
+#   TV_HOST=192.168.1.50 TMDB_TOKEN=... REGION=IN SERVICES="Netflix, JioHotstar" ./install.sh --yes
+#                                    no prompts (for agents / CI)
 #
 # Options:
 #   --tv <ip>             the TV's IP address (or TV_HOST=)
@@ -29,7 +30,7 @@ while [ $# -gt 0 ]; do
     --input-key-service) INPUT_SVC=1 ;;
     --no-video) VIDEO=0 ;;
     --yes|-y) YES=1 ;;
-    -h|--help) sed -n 2,20p "$0"; exit 0 ;;
+    -h|--help) sed -n 2,17p "$0"; exit 0 ;;
     *) echo "unknown option: $1 (see --help)" >&2; exit 2 ;;
   esac
   shift
@@ -98,29 +99,57 @@ elif [ "$CURRENT_HOME" = com.google.android.apps.tv.launcherx ]; then PLATFORM=g
 else PLATFORM=androidtv; fi
 echo "Platform: $PLATFORM (Home currently: ${CURRENT_HOME:-unknown})"
 
-# ------------------------------------------------------------------ 3. keys
-bold "3/7  Keys (stored only in tonight/secrets.properties, which git ignores)"
+# ------------------------------------------------------------------ 3. keys, country and streaming apps
+bold "3/7  Keys, country and streaming apps (stored only in tonight/secrets.properties, which git ignores)"
+SECRETS=tonight/secrets.properties
+prop() { [ -f "$SECRETS" ] && grep -E "^$1=" "$SECRETS" | head -n 1 | cut -d= -f2- || true; }
 if [ "$DO_TONIGHT" = 1 ]; then
-  if [ -f tonight/secrets.properties ] && [ -z "${TMDB_TOKEN:-}" ]; then
-    echo "Using the existing tonight/secrets.properties."
+  if [ -f "$SECRETS" ] && [ -z "${TMDB_TOKEN:-}" ]; then
+    echo "Using the keys in the existing $SECRETS."
+    TMDB_TOKEN=$(prop tmdb.token)
+    ANTHROPIC_KEY=${ANTHROPIC_KEY:-$(prop anthropic.key)}
+    OLD_REGION=$(prop region)
+    REGION=${REGION:-$OLD_REGION}
+    [ -z "${SERVICES:-}" ] && [ "$REGION" = "$OLD_REGION" ] && SERVICES_LINE=$(grep -E '^services=' "$SECRETS" | head -n 1 || true)
   else
     echo "Tonight needs a free TMDB API Read Access Token: https://www.themoviedb.org/settings/api"
     ask TMDB_TOKEN "TMDB API Read Access Token (input hidden; leave empty to skip Tonight): " secret
-    if [ -z "${TMDB_TOKEN:-}" ]; then
-      echo "No TMDB token: Tonight will be skipped."; DO_TONIGHT=0
-    else
-      ask REGION "Your country as a 2-letter code, for Tonight's services (US, GB, IN, DE...) [US]: "
-      REGION=$(printf '%s' "${REGION:-US}" | tr '[:lower:]' '[:upper:]' | cut -c1-2)
+    if [ -n "${TMDB_TOKEN:-}" ]; then
       echo "Optional: an Anthropic API key turns on Tonight's AI picks and taste memory: https://console.anthropic.com/settings/keys"
       ask ANTHROPIC_KEY "Anthropic API key (input hidden; leave empty to skip): " secret
-      ( umask 077
-        { echo "# Written by install.sh. Git-ignored: never commit this file."
-          echo "tmdb.token=${TMDB_TOKEN}"
-          echo "region=${REGION}"
-          echo "anthropic.key=${ANTHROPIC_KEY:-}"; } > tonight/secrets.properties )
-      echo "Wrote tonight/secrets.properties (readable only by you)."
     fi
   fi
+  if [ -z "${TMDB_TOKEN:-}" ]; then
+    echo "No TMDB token: Tonight will be skipped."; DO_TONIGHT=0
+  fi
+fi
+if [ "$DO_TONIGHT" = 1 ]; then
+  # Country: what Tonight shows depends on it (titles, and which streaming services exist there).
+  TV_COUNTRY=$(tv 'getprop persist.sys.locale; getprop persist.sys.country; getprop ro.product.locale' 2>/dev/null | tr -d '\r' \
+    | sed -n -e 's/^[a-z][a-z][-_]\([A-Za-z][A-Za-z]\)$/\1/p' -e 's/^\([A-Za-z][A-Za-z]\)$/\1/p' | head -n 1 | tr '[:lower:]' '[:upper:]' || true)
+  ask REGION "Your country as a 2-letter code (US, GB, IN, DE, CA, AU...) [${TV_COUNTRY:-US}]: "
+  REGION=$(printf '%s' "${REGION:-${TV_COUNTRY:-US}}" | tr '[:lower:]' '[:upper:]' | tr -cd '[:upper:]' | cut -c1-2)
+  [ ${#REGION} = 2 ] || die "the country must be a 2-letter code such as US, GB or IN."
+  echo "Country: $REGION"
+  # Streaming apps: TMDB's list for the country, with the ones installed on the TV marked.
+  if [ -z "${SERVICES_LINE:-}" ]; then
+    mkdir -p "$ROOT/.halo"
+    tv 'pm list packages' > "$ROOT/.halo/packages.txt" 2>/dev/null || true
+    PICK=()
+    [ -n "${SERVICES:-}" ] && PICK=(--pick "$SERVICES")
+    [ "$YES" = 1 ] && PICK+=(--yes)
+    SERVICES_LINE=$(TMDB_TOKEN="$TMDB_TOKEN" "$PY" -I "$ROOT/tools/services.py" "$REGION" --packages "$ROOT/.halo/packages.txt" ${PICK[@]+"${PICK[@]}"}) \
+      || die "could not read the streaming services for $REGION from TMDB. Is the token right?"
+  else
+    echo "Streaming apps: ${SERVICES_LINE#services=}  (set SERVICES=\"Netflix, Hulu\" to choose again)"
+  fi
+  ( umask 077
+    { echo "# Written by install.sh. Git-ignored: never commit this file."
+      echo "tmdb.token=${TMDB_TOKEN}"
+      echo "region=${REGION}"
+      echo "$SERVICES_LINE"
+      echo "anthropic.key=${ANTHROPIC_KEY:-}"; } > "$SECRETS.tmp" && mv "$SECRETS.tmp" "$SECRETS" )
+  echo "Wrote $SECRETS (readable only by you)."
 fi
 
 # ------------------------------------------------------------------ 4. build

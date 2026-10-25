@@ -20,6 +20,9 @@ android {
         buildConfigField 'String', 'TMDB_TOKEN', "\"${secrets.getProperty('tmdb.token', '')}\""
         buildConfigField 'String', 'ANTHROPIC_KEY', "\"${secrets.getProperty('anthropic.key', '')}\""
         buildConfigField 'String', 'REGION', "\"${secrets.getProperty('region', 'US').trim().toUpperCase()}\""
+        // name:TMDB provider ids[:Android package]; ...  (install.sh fills it in from TMDB for the chosen country)
+        def services = secrets.getProperty('services', 'Netflix:8,1796; Prime Video:9,119,2100; Disney+:337').trim()
+        buildConfigField 'String', 'SERVICES', "\"${services.replace('\\', '').replace('"', '')}\""
         buildConfigField 'String', 'SEARCH_URL', "\"${secrets.getProperty('search.url', '')}\""
         buildConfigField 'String', 'SEARCH_KEY', "\"${secrets.getProperty('search.key', '')}\""
     }

@@ -32,8 +32,8 @@ import java.util.concurrent.Executors;
 import com.kartikmodi.halo.tonight.SearchIndex.Hit;
 
 /**
- * Search: an on-screen keyboard on the left, and on the right everything on UK Netflix, Prime Video and Disney+
- * that matches, refreshed with every letter. The index is kept on the TV (SearchIndex) and searched in memory;
+ * Search: an on-screen keyboard on the left, and on the right everything on the viewer's streaming apps in their
+ * country (Services) that matches, refreshed with every letter. The index is kept on the TV (SearchIndex) and searched in memory;
  * the "Tonight" Alexa skill searches the same index through SearchProvider. Drawn on a 1920x1080 stage scaled to
  * the screen, like HeroesView.
  */
@@ -47,8 +47,6 @@ final class SearchView extends FrameLayout {
 
     private static final String TAG = "TonightSearch";
     private static final int HOT = WheelView.HOT;
-    private static final String[] SERVICE_NAMES = {"N", "Netflix", "P", "Prime Video", "D", "Disney+"};
-    private static final int[] SERVICE_COLORS = {0xFFE50914, 0xFF1AA3E8, 0xFF1F4FFF};
     private static final int COLS = 6, MAX = 24, CARD_W = 160, CARD_H = 240, GAP_X = 24, ROW_H = 318;
     private static final String KEYS = "abcdefghijklmnopqrstuvwxyz1234567890";
     /** The bottom row of the keyboard: label, columns it spans. */
@@ -103,7 +101,7 @@ final class SearchView extends FrameLayout {
         head.setLetterSpacing(.18f);
         stage.addView(head, at(96, 64, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         TextView where = text(19, body, 400, 0x80FFFFFF);
-        where.setText("Everything on Netflix, Prime Video and Disney+ in the UK");
+        where.setText("Everything on " + Services.list("and") + " in " + Services.COUNTRY);
         stage.addView(where, at(96, 108, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         query = text(40, body, 500, Color.WHITE);
@@ -327,7 +325,7 @@ final class SearchView extends FrameLayout {
     private void enter() {
         Hit h = hits.get(result);
         if (h.services.isEmpty()) {
-            host.toast(h.name + " isn't on Netflix, Prime Video or Disney+ in the UK");
+            host.toast(h.name + " " + Services.notOn());
             return;
         }
         if (h.services.length() == 1) {
@@ -459,15 +457,14 @@ final class SearchView extends FrameLayout {
             Images.load(Tmdb.image(h.poster, "w185"), bm -> { if (bm != null && want.equals(img.getTag())) img.setImageBitmap(bm); });
         }
         chips.removeAllViews();
-        for (int k = 0; k < 3; k++) {
-            String code = SERVICE_NAMES[k * 2];
-            if (!h.services.contains(code)) continue;
+        for (Services.Service s : Services.ALL) {
+            if (h.services.indexOf(s.code) < 0) continue;
             TextView chip = text(14, display, 800, Color.WHITE);
-            chip.setText(code.equals("D") ? "D+" : code);
+            chip.setText(s.chip);
             chip.setGravity(Gravity.CENTER);
             chip.setPadding(6, 0, 6, 0);
             chip.setMinWidth(24);
-            chip.setBackground(round(SERVICE_COLORS[k], 0, 6));
+            chip.setBackground(round(s.color, 0, 6));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 24);
             lp.rightMargin = 5;
             chips.addView(chip, lp);
@@ -477,13 +474,12 @@ final class SearchView extends FrameLayout {
     // ------------------------------------------------------------------ helpers
 
     private static String serviceName(String code) {
-        for (int i = 0; i < SERVICE_NAMES.length; i += 2) if (SERVICE_NAMES[i].equals(code)) return SERVICE_NAMES[i + 1];
-        return code;
+        String n = Services.name(code);
+        return n == null ? code : n;
     }
 
     private static int serviceColor(String code) {
-        for (int i = 0; i < SERVICE_NAMES.length; i += 2) if (SERVICE_NAMES[i].equals(code)) return SERVICE_COLORS[i / 2];
-        return Color.GRAY;
+        return Services.color(code);
     }
 
     private TextView text(float size, Typeface face, int weight, int color) {

@@ -17,7 +17,7 @@ final class Title {
 
     // filled by Tmdb.details()
     volatile boolean detailed;
-    /** "N" Netflix, "D" Disney+, "P" Prime Video; null when none of the three streams it in the UK. */
+    /** The code of the service that streams it (see Services); null when none of the configured ones does. */
     volatile String service;
     volatile String meta = "";
     volatile String genresText = "";

@@ -33,8 +33,8 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * Every film and series streaming in the UK on Netflix, Prime Video and Disney+, kept on the TV and searched in
- * memory, so results change with every letter without going online.
+ * Every film and series streaming in the viewer's country on their services (Services), kept on the TV and
+ * searched in memory, so results change with every letter without going online.
  *
  * Built from TMDB's discover lists (films and series, per service, 20 a page, at most 500 pages a list, so a
  * longer list is split by release year): about 2,200 calls, once a week (IndexJob). Each day a quick refresh
@@ -43,7 +43,6 @@ import java.util.zip.GZIPOutputStream;
  */
 final class SearchIndex {
     private static final String TAG = "TonightIndex";
-    private static final String[][] SERVICES = {{"N", "8"}, {"P", "9|2100"}, {"D", "337"}};
     private static final int MAX_PAGES = 500, THREADS = 8, REFRESH_PAGES = 3, CHUNK = 50;
 
     static final class Hit {
@@ -106,16 +105,21 @@ final class SearchIndex {
         return building;
     }
 
-    /** Built at least once: there is something to search. */
+    /** Built at least once for this country and these services: there is something to search. */
     boolean exists() {
-        return file.isFile();
+        return file.isFile() && Services.SIGNATURE.equals(readMeta().optString("config"));
     }
 
     long builtAt() {
+        JSONObject m = readMeta();
+        return Services.SIGNATURE.equals(m.optString("config")) ? m.optLong("full") : 0;
+    }
+
+    private JSONObject readMeta() {
         try {
-            return new JSONObject(new String(java.nio.file.Files.readAllBytes(meta.toPath()), StandardCharsets.UTF_8)).optLong("full");
+            return new JSONObject(new String(java.nio.file.Files.readAllBytes(meta.toPath()), StandardCharsets.UTF_8));
         } catch (Exception e) {
-            return 0;
+            return new JSONObject();
         }
     }
 
@@ -172,7 +176,7 @@ final class SearchIndex {
         if (loaded && file.lastModified() == loadedAt) return titles;
         synchronized (this) {
             if (loaded && file.lastModified() == loadedAt) return titles;
-            if (file.isFile()) {
+            if (exists()) {
                 loadedAt = file.lastModified();
                 long t0 = System.currentTimeMillis();
                 try {
@@ -212,7 +216,7 @@ final class SearchIndex {
         if (!tmp.renameTo(file)) throw new java.io.IOException("could not replace the index");
         JSONObject m = new JSONObject();
         long old = builtAt();
-        m.put("full", full ? System.currentTimeMillis() : old).put("refresh", System.currentTimeMillis()).put("titles", all.size());
+        m.put("full", full ? System.currentTimeMillis() : old).put("refresh", System.currentTimeMillis()).put("titles", all.size()).put("config", Services.SIGNATURE);
         try (FileOutputStream o = new FileOutputStream(meta)) {
             o.write(m.toString().getBytes(StandardCharsets.UTF_8));
         }
@@ -330,7 +334,7 @@ final class SearchIndex {
     private static JSONArray plan(ExecutorService pool) throws Exception {
         List<Object[]> lists = new ArrayList<>();   // {kind, svc, prov, lo, hi}
         for (String kind : new String[]{"movie", "tv"})
-            for (String[] s : SERVICES) lists.add(new Object[]{kind, s[0], s[1], null, null});
+            for (Services.Service s : Services.ALL) lists.add(new Object[]{kind, String.valueOf(s.code), s.providers, null, null});
         JSONArray chunks = new JSONArray();
         while (!lists.isEmpty()) {
             List<Future<JSONObject>> fs = new ArrayList<>();
@@ -364,8 +368,8 @@ final class SearchIndex {
         Map<String, Hit> got = new LinkedHashMap<>();
         List<Future<?>> fs = new ArrayList<>();
         for (String kind : new String[]{"movie", "tv"})
-            for (String[] s : SERVICES) {
-                Object[] l = {kind, s[0], s[1], null, null};
+            for (Services.Service s : Services.ALL) {
+                Object[] l = {kind, String.valueOf(s.code), s.providers, null, null};
                 for (int p = 1; p <= REFRESH_PAGES; p++) {
                     final int page = p;
                     fs.add(pool.submit(() -> add(got, l, page(l, page))));
@@ -416,9 +420,7 @@ final class SearchIndex {
     }
 
     private static String order(String s) {
-        StringBuilder b = new StringBuilder();
-        for (char c : new char[]{'N', 'P', 'D'}) if (s.indexOf(c) >= 0) b.append(c);
-        return b.toString();
+        return Services.order(s);
     }
 
     /** One page of one list; a few tries, then an empty page so one failure doesn't stop the build. */

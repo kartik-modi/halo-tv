@@ -46,8 +46,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * TONIGHT.: spin a genre wheel, browse what is on your Netflix, Prime Video and Disney+ in the UK as Series
- * and Films, and open a title straight in its app. Everything is fetched live as you move; the only thing
+ * TONIGHT.: spin a genre wheel, browse what is on your streaming apps (Services: Netflix, Prime Video and Disney+
+ * unless set otherwise) in your country as Series and Films, and open a title straight in its app. Everything is fetched live as you move; the only thing
  * saved is the taste graph of what you open, which Claude reads to fill "For You".
  */
 public class MainActivity extends Activity {
@@ -55,7 +55,6 @@ public class MainActivity extends Activity {
     private static final String TAG = "Tonight";
     private static final int HOT = WheelView.HOT, INK = 0xFF07070A;
     private static final String FOR_YOU = "For You";
-    private static final String[] SERVICE_NAME = {"N", "Netflix", "D", "Disney+", "P", "Prime Video"};
     private static final int SLOTS_PER_ROW = 9, WALL = 7;
 
     private enum Zone { DIAL, REELS, TBTN, OVERLAY, HEROES, SEARCH }
@@ -102,8 +101,8 @@ public class MainActivity extends Activity {
     /** Every genre on the wheel except Everything; Up or Down jumps to a random other one. */
     private static final String[] GENRE_WORDS = java.util.Arrays.copyOfRange(Tmdb.GENRES, 1, Tmdb.GENRES.length);
     private static final String[] KINDS = {"series", "films", "series or films"};
-    private static final String[] SERVICES = {"Netflix, Disney+ & Prime", "Netflix", "Disney+", "Prime Video"};
-    private static final String[] SERVICE_IDS = {Tmdb.ALL_SERVICES, String.valueOf(Tmdb.NETFLIX), String.valueOf(Tmdb.DISNEY), Tmdb.PRIME + "|" + Tmdb.PRIME_ADS};
+    /** "all my apps" first, then each service on its own. */
+    private static final String[] SERVICES = serviceChoices(false), SERVICE_IDS = serviceChoices(true);
 
     private TasteGraph graph;
     private SoundPool sounds;
@@ -702,7 +701,7 @@ public class MainActivity extends Activity {
             heroTitle.setText(loading ? currentGenre() : "Nothing here");
             setTitleSize(heroTitle.getText().toString());
             heroMeta.setText("");
-            heroText.setText(loading ? (status != null ? status : "Finding what's on your Netflix, Prime Video and Disney+…")
+            heroText.setText(loading ? (status != null ? status : "Finding what's on your " + Services.list("and") + "…")
                     : status != null ? status : "Nothing in " + currentGenre() + " is on your services right now. Spin on.");
             playBtn.setVisibility(View.GONE);
             heroAside.setText("");
@@ -812,7 +811,7 @@ public class MainActivity extends Activity {
         open(t, null);
     }
 
-    /** service: the app to open it in ("N", "D", "P"); null for the first one TMDB lists. */
+    /** service: the code of the app to open it in (see Services); null for the first one TMDB lists. */
     private void open(Title t, String service) {
         if (t == null) return;
         showToast("Opening " + t.name + (service == null ? "" : " on " + serviceName(service)) + "…");
@@ -822,7 +821,7 @@ public class MainActivity extends Activity {
             } catch (Exception ignored) {
             }
             if (service != null) t.service = service;
-            Intent i = JustWatch.intentFor(t);
+            Intent i = JustWatch.intentFor(this, t);
             main.post(() -> {
                 graph.opened(t);
                 try {
@@ -850,9 +849,14 @@ public class MainActivity extends Activity {
     }
 
     private static String serviceName(String code) {
-        if (code == null) return null;
-        for (int i = 0; i < SERVICE_NAME.length; i += 2) if (SERVICE_NAME[i].equals(code)) return SERVICE_NAME[i + 1];
-        return null;
+        return Services.name(code);
+    }
+
+    private static String[] serviceChoices(boolean ids) {
+        List<String> out = new ArrayList<>();
+        out.add(ids ? Services.allProviders() : Services.ALL.size() > 3 ? "all my apps" : Services.list("&"));
+        if (Services.ALL.size() > 1) for (Services.Service s : Services.ALL) out.add(ids ? s.providers : s.name);
+        return out.toArray(new String[0]);
     }
 
     // ------------------------------------------------------------------ Marvel and DC

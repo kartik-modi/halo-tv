@@ -8,7 +8,7 @@
 |---|---|
 | **Home** | A liquid-glass home screen in one colour (Midnight), a slow *Waves* motion backdrop behind the glass, and clean white logos instead of app banners. No ads, no sponsored rows. |
 | **Ambient** | An always-on screen with a clock, sunrise/sunset, weather, air quality, a turntable music player and **Jarvis**, an AI agent that talks back. Everything is controllable from a web app on your phone: scan the QR code on the screen. |
-| **Tonight** | One place to find films and series across Netflix, Prime Video, Disney+ and more. A genre wheel, AI picks that remember your taste, and a **Marvel and DC Hall of Heroes** listing every film and series a hero has been in. |
+| **Tonight** | One place to find films and series across **your** streaming apps, in **your** country: Netflix, Prime Video, Disney+, JioHotstar, Apple TV+, Hulu, BBC iPlayer or whatever you subscribe to. A genre wheel, AI picks that remember your taste, and a **Marvel and DC Hall of Heroes** listing every film and series a hero has been in. |
 
 It installs over Wi-Fi from your computer in one command, and it's built to be installed **by an AI coding agent** (Claude Code, Codex or ChatGPT). Give your agent this repo and it does the setup with you.
 
@@ -27,6 +27,8 @@ It installs over Wi-Fi from your computer in one command, and it's built to be i
 - [Using Halo TV](#using-halo-tv)
 - [Jarvis relay and Alexa (optional)](#jarvis-relay-and-alexa-optional)
 - [Customise](#customise)
+  - [Country and streaming apps](#country-and-streaming-apps)
+  - [Prompts for your agent](#prompts-for-your-agent)
 - [Uninstall](#uninstall)
 - [Troubleshooting](#troubleshooting)
 - [Keys and privacy](#keys-and-privacy)
@@ -72,9 +74,10 @@ Open **Claude Code**, **Codex**, or **ChatGPT** with a terminal/agent mode, and 
 ```text
 Clone https://github.com/kartik-modi/halo-tv and install Halo TV on my TV.
 Follow AGENTS.md in the repo step by step, and ask me for anything you need.
+I live in <your country>. My streaming apps are <e.g. Netflix, JioHotstar, Apple TV+>.
 ```
 
-The agent reads [AGENTS.md](AGENTS.md), checks your computer's tools, asks for your TV's IP address and your keys, builds both apps and installs them. You only need to do two things on the TV yourself: turn on ADB debugging ([step 2](#2-turn-on-adb-debugging-on-the-tv)) and press **OK** on the "Allow USB debugging?" prompt.
+Fill in the last line (or leave it out and the agent asks). The agent reads [AGENTS.md](AGENTS.md), checks your computer's tools, asks for your TV's IP address and your keys, sets Tonight up for your country and your apps, builds both apps and installs them. You only need to do two things on the TV yourself: turn on ADB debugging ([step 2](#2-turn-on-adb-debugging-on-the-tv)) and press **OK** on the "Allow USB debugging?" prompt.
 
 ---
 
@@ -141,7 +144,7 @@ It walks through seven steps:
 
 1. **Checks your tools** (JDK 17, Android SDK, Python) and tells you exactly what to install if something is missing.
 2. **Connects to the TV.** Enter its IP address.
-3. **Asks for your keys** (step 3 above) and your country (for Tonight's services), and writes them to the git-ignored `tonight/secrets.properties`.
+3. **Asks for your keys** (step 3 above), **your country** (it suggests the TV's own) and **your streaming apps**: it lists every streaming service TMDB knows in your country, most popular first, with a `*` on the ones whose app is already on the TV. Type the numbers or names you subscribe to, or press Enter for the starred ones. Everything goes into the git-ignored `tonight/secrets.properties`.
 4. **Builds** Home and Tonight.
 5. **Installs Home + Ambient** and makes it your home screen:
    - **Google TV / Android TV:** Halo TV becomes the real Home and the stock launcher is disabled (not deleted). If anything goes wrong it is put back automatically.
@@ -157,7 +160,7 @@ Useful options:
 ./install.sh --tonight-only             # Tonight only
 ./install.sh --keep-stock               # never disable the stock launcher (use the Home-button redirect)
 ./install.sh --input-key-service        # also open Halo TV's input switcher from the remote's Input button
-TV_HOST=192.168.1.50 TMDB_TOKEN=... REGION=US ANTHROPIC_KEY=... ./install.sh --yes   # no prompts
+TV_HOST=192.168.1.50 TMDB_TOKEN=... REGION=IN SERVICES="Netflix, JioHotstar, Zee5" ./install.sh --yes   # no prompts
 ```
 
 Re-running it is safe: it reinstalls over the existing apps and keeps your settings.
@@ -205,6 +208,7 @@ Optional, and needs an [Amazon developer account](https://developer.amazon.com/a
      --interaction-model "file:jarvis/alexa/jarvis/en-GB.json"
    ```
    Repeat with `tonight-skill.json` and `jarvis/alexa/tonight/en-GB.json`.
+   The models are English (UK). If your Alexa speaks another English (`en-IN`, `en-US`, `en-AU`, `en-CA`), use that locale instead: in the two manifests rename the `en-GB` keys to it, and pass `--locale en-IN` (for example) with the same model files.
 4. Tell the relay which skills to trust:
    ```bash
    cd jarvis/relay
@@ -231,7 +235,65 @@ Home's look and dock live in [`home/app/src/main/res/values/config.xml`](home/ap
 
 Replace `assets/waves.mp4` with any looping 960×540 video for a different backdrop.
 
-Tonight's country is `region=` in `tonight/secrets.properties`. Its rows and genre rules are in `tonight/app/src/main/java/com/kartikmodi/halo/tonight/`.
+### Country and streaming apps
+
+Tonight works in any country TMDB covers and with any streaming service TMDB lists there. Both are set in the git-ignored `tonight/secrets.properties`:
+
+```properties
+region=IN
+services=Netflix:8,175; Amazon Prime Video:119,2100; JioHotstar:2336; Zee5:232; aha:532:ahaflix.tv
+```
+
+- **`region`**: your 2-letter country code (`US`, `GB`, `IN`, `DE`, `CA`, `AU`, `BR`...). Tonight shows only what streams there, and its search index is rebuilt automatically when it changes.
+- **`services`**: one entry per app, separated by `;`, each `name:TMDB provider ids[:Android TV package]`. The order is the order of the chips and of the *"on …"* choice in "Tonight I want".
+
+**The easy way to change either:** run the installer again and pick again.
+
+```bash
+REGION=IN ./install.sh --tonight-only                                   # new country: lists its services
+SERVICES="Netflix, Apple TV, Hulu" ./install.sh --tonight-only           # same country, different apps
+```
+
+**What each service gets:**
+
+| | Services | Opens a title |
+|---|---|---|
+| Built in | Netflix, Prime Video, Disney+, JioHotstar, Apple TV+, Max, Hulu, Paramount+, Peacock, ZEE5, Sony LIV, Crunchyroll, MUBI | Straight on the title (from JustWatch's link), or the app's own search |
+| Any other | Whatever TMDB lists in your country (BBC iPlayer, aha, Stan, Viaplay, Crave...) | On the title when the app takes JustWatch's link, otherwise the app opens. Needs its package, see below |
+
+**Adding a service by hand** (for example Apple TV+ in India):
+
+1. Find its TMDB provider id for your country: `TMDB_TOKEN=... python3 tools/services.py IN --pick "apple tv"` prints the line to use.
+2. For a service that isn't built in, find its package on the TV: `TV_HOST=<tv-ip> tools/venv/bin/python tools/tv.py "pm list packages" | grep -i <name>`, and add it as the third part: `BBC iPlayer:38:bbc.iplayer.android`.
+3. Add the entry to `services=` and run `./install.sh --tonight-only`.
+
+Tonight's rows and genre rules are in `tonight/app/src/main/java/com/kartikmodi/halo/tonight/`; the built-in services and their colours, packages and links are in `Services.java`.
+
+### Prompts for your agent
+
+Once Halo TV is installed, paste one of these into Claude Code, Codex or ChatGPT in the repo folder:
+
+```text
+Add Apple TV+ to Tonight. Follow "Country and streaming apps" in README.md: find its
+TMDB provider id for my country with tools/services.py, check its package on the TV,
+update services= in tonight/secrets.properties and run ./install.sh --tonight-only.
+```
+
+```text
+I've moved to India. Switch Tonight to region IN, show me the streaming services
+there with tools/services.py, let me pick mine, and reinstall Tonight.
+```
+
+```text
+Remove Disney+ from Tonight and put JioHotstar first. Edit services= in
+tonight/secrets.properties (never print the token) and run ./install.sh --tonight-only.
+```
+
+```text
+Tonight opens <service> but not the title. Check whether JustWatch has a link for it
+(JustWatch.java) and whether the app takes it (adb: am start -a android.intent.action.VIEW
+-d <link> -p <package>). If it does, add the service to KNOWN in Services.java.
+```
 
 ---
 
@@ -255,6 +317,10 @@ Re-enables the stock launcher, removes Halo TV's Home-button service, and uninst
 | `Home currently resolves to …setupwraith` (Google TV) | Google's setup wizard is claiming Home. Use `./install.sh --keep-stock`. |
 | No Waves behind the glass | Run `./install.sh --home-only` again, or set `glass_backdrop` to `still` on low-end TVs. |
 | Tonight is empty | The TMDB token is missing or wrong. Fix `tonight/secrets.properties` and run `./install.sh --tonight-only`. |
+| Tonight shows the wrong country's titles | Set `region=` (or run `REGION=XX ./install.sh --tonight-only`). Search rebuilds by itself, which takes a few minutes. |
+| A service is missing from Tonight | Add it: [Country and streaming apps](#country-and-streaming-apps). |
+| "<Service> isn't installed on this TV" | Install the app on the TV, or, for a service that isn't built in, add its package as the third part of its `services=` entry. |
+| A service opens its app but not the title | That app doesn't take JustWatch's links; search for the title in the app. |
 | No AI picks in Tonight | Add an Anthropic key to `tonight/secrets.properties` and run `./install.sh --tonight-only`. |
 | The phone web app won't open | The phone must be on the same Wi-Fi as the TV. Open `http://<TV-IP>:8765`. |
 | Build fails with a licence error | `yes \| sdkmanager --licenses`, then run again. |

@@ -93,7 +93,7 @@ final class Taste {
         String system = "You pick what a viewer should watch tonight from their taste graph. Answer with one JSON object and nothing else.";
         String prompt = "Taste graph:\n" + graph.describe(30)
                 + "\nProfile: " + (graph.profile() == null ? "{}" : graph.profile().toString())
-                + "\n\nCandidates (all streaming on the viewer's services in the UK right now):\n" + cs
+                + "\n\nCandidates (all streaming on the viewer's services in " + Services.COUNTRY + " right now):\n" + cs
                 + "\nChoose up to " + max + " the viewer will most likely love, best first. Prefer variety; never pick something "
                 + "already in the graph. For each, give a reason under 12 words that names the trait or a title it connects to, "
                 + "like \"Because you loved Dark: twisty time puzzles\".\n"

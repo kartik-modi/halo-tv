@@ -39,8 +39,11 @@ Ask for these. Explain that they're stored only on this computer, in a git-ignor
 | Key | Required? | Where |
 |---|---|---|
 | TMDB **API Read Access Token** | Required for Tonight (skip Tonight without it) | https://www.themoviedb.org/settings/api (free) |
-| Country (2-letter code, e.g. US, GB, IN) | Required for Tonight; defaults to US | Ask the person |
 | Anthropic API key | Optional: Tonight's AI picks and taste memory | https://console.anthropic.com/settings/keys |
+
+Also ask (these aren't secret):
+- **Their country**, as a 2-letter code (US, GB, IN, DE, CA, AU...). Tonight shows only what streams there.
+- **Which streaming apps they pay for.** Any service TMDB lists in their country works, not just Netflix, Prime Video and Disney+. Once the token is in place, show them the list with `TMDB_TOKEN=*** python3 tools/services.py <CC>` (read the token from `tonight/secrets.properties` into the environment; don't put it on the command line you show), and let them pick.
 
 The safest way is for the person to put the keys into the file themselves:
 
@@ -56,9 +59,10 @@ If they paste a key into the chat instead, write it into `tonight/secrets.proper
 From the repository root:
 
 ```bash
-TV_HOST=<tv-ip> ./install.sh --yes
+TV_HOST=<tv-ip> REGION=<CC> SERVICES="<their apps, comma-separated>" ./install.sh --yes
 ```
 
+- `REGION` and `SERVICES` set Tonight's country and apps (names as `tools/services.py` lists them, e.g. `SERVICES="Netflix, JioHotstar, Zee5"`). Without `SERVICES`, `--yes` picks the services whose app is already on the TV. The result is the `services=` line in `tonight/secrets.properties`.
 - `--yes` means no prompts. The installer uses the existing `tonight/secrets.properties`. If there's no TMDB token, it installs Home + Ambient and skips Tonight.
 - **Tell the person to watch the TV** when the installer connects: the first time, a dialog asks **"Allow USB debugging?"**. They must tick **Always allow from this computer** and press **OK** within about two minutes. If it times out, run the command again.
 - Add `--keep-stock` if they don't want the stock launcher disabled (on Fire TV it never is).
@@ -85,6 +89,10 @@ jarvis/setup-relay.sh --tv <tv-ip>
 
 A browser window opens for the Cloudflare login (the person does that). Alexa skills are a further optional step: follow README.md, "Alexa skills".
 
+## Later: changing the country or the streaming apps
+
+Follow README.md, "Country and streaming apps". In short: re-run `REGION=<CC> ./install.sh --tonight-only` for a new country, or `SERVICES="..." ./install.sh --tonight-only` for different apps, or edit the `services=` line by hand (`name:TMDB provider ids[:Android TV package]`, separated by `;`). For a service that isn't built into `Services.java`, find its package with `tools/tv.py "pm list packages"` and add it as the third part, or Tonight can list its titles but not open them.
+
 ## Undo
 
 ```bash
@@ -95,4 +103,5 @@ TV_HOST=<tv-ip> ./uninstall.sh
 
 - `tools/tv.py` is the ADB client: `TV_HOST=<ip> tools/venv/bin/python tools/tv.py '<shell command>'`; `--probe` prints the model and Android version.
 - Package names: `com.kartikmodi.halo.home` (Home + Ambient), `com.kartikmodi.halo.tonight`.
+- Tonight's built-in services (colours, packages, links): `tonight/app/src/main/java/com/kartikmodi/halo/tonight/Services.java`; the picker: `tools/services.py`.
 - Home's settings: `home/app/src/main/res/values/config.xml`. Rebuild with `./install.sh --home-only`.

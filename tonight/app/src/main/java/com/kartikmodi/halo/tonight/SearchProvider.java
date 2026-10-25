@@ -20,12 +20,18 @@ public final class SearchProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        MatrixCursor c = new MatrixCursor(new String[]{"id", "tv", "title", "year", "services"});
+        MatrixCursor c = new MatrixCursor(new String[]{"id", "tv", "title", "year", "services", "on"});
         String q = uri.getQueryParameter("q");
         if (q == null || getContext() == null) return c;
         if (!SearchIndex.get(getContext()).exists()) return null;   // not built yet: the caller just says it is searching
-        for (SearchIndex.Hit h : SearchIndex.get(getContext()).query(q, 5))
-            c.addRow(new Object[]{h.id, h.tv ? 1 : 0, h.name, h.year, h.services});
+        for (SearchIndex.Hit h : SearchIndex.get(getContext()).query(q, 5)) {
+            StringBuilder on = new StringBuilder();   // "Netflix and Prime Video", for Jarvis to say
+            for (char k : h.services.toCharArray()) {
+                Services.Service s = Services.of(k);
+                if (s != null) on.append(on.length() == 0 ? "" : " and ").append(s.name.replace("+", " Plus"));
+            }
+            c.addRow(new Object[]{h.id, h.tv ? 1 : 0, h.name, h.year, h.services, on.toString()});
+        }
         return c;
     }
 

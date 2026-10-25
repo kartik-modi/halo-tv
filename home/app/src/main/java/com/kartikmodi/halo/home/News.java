@@ -15,11 +15,19 @@ import java.util.Locale;
 /**
  * Headlines for Jarvis from Google News' public RSS feeds: free, no key. A category (world, UK,
  * business, technology, science, health, sport, entertainment) uses its section; anything else is a
- * news search; nothing gives the top stories. UK edition.
+ * news search; nothing gives the top stories. The edition follows the TV's country (Settings → language and
+ * region), in English; a country without an English edition gets the US one.
  */
 final class News {
 
-    private static final String EDITION = "hl=en-GB&gl=GB&ceid=GB:en";
+    private static final String EDITION = edition(java.util.Locale.getDefault().getCountry());
+
+    private static String edition(String country) {
+        String c = country == null ? "" : country.toUpperCase(Locale.ROOT);
+        if (!java.util.Arrays.asList("GB", "US", "IN", "AU", "CA", "IE", "NZ", "ZA", "SG", "PH", "NG", "KE", "PK",
+                "MY", "AE", "IL", "BW", "ET", "GH", "NA", "TZ", "UG", "ZW", "LV", "LT").contains(c)) c = "US";
+        return "hl=en-" + c + "&gl=" + c + "&ceid=" + c + ":en";
+    }
 
     private News() {
     }

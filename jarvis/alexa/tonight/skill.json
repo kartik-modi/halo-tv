@@ -4,8 +4,8 @@
       "locales": {
         "en-GB": {
           "name": "Tonight",
-          "summary": "Search everything on Netflix, Prime Video and Disney+ on the TV.",
-          "description": "Private skill: searches the TONIGHT. app's index of every film and series on UK Netflix, Prime Video and Disney+, and shows the results on the TV.",
+          "summary": "Search everything on your streaming apps on the TV.",
+          "description": "Private skill: searches the TONIGHT. app's index of every film and series on your streaming apps, and shows the results on the TV.",
           "examplePhrases": [
             "Alexa, ask Tonight to search for Inception",
             "Alexa, ask Tonight to find Stranger Things",

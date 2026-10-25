@@ -63,8 +63,6 @@ final class HeroesView extends FrameLayout {
     private static final float BUST_W = 3.5f, HEAD_TOP = 1f;
     private static final float[][] HEAD = {{90, 95, 100}, {104, 110, 116}}, TOP = {{140, 256, 374}, {132, 262, 390}};
     private static final float[] SPACING = {172, 222};
-    private static final String[] SERVICE_NAMES = {"D", "Disney+", "N", "Netflix", "P", "Prime Video"};
-    private static final int[] SERVICE_COLORS = {0xFF1F4FFF, 0xFFE50914, 0xFF1AA3E8};
 
     private static final class Hero {
         String name, img, bg;
@@ -652,15 +650,14 @@ final class HeroesView extends FrameLayout {
         FrameLayout po = (FrameLayout) ((LinearLayout) cards.get(i)).getChildAt(0);
         LinearLayout chips = (LinearLayout) po.getChildAt(1);
         chips.removeAllViews();
-        for (int k = 0; k < 3; k++) {
-            String code = SERVICE_NAMES[k * 2];
-            if (!t.services.contains(code)) continue;
+        for (Services.Service s : Services.ALL) {
+            if (t.services.indexOf(s.code) < 0) continue;
             TextView chip = text(14, display, 800, Color.WHITE);
-            chip.setText(code.equals("D") ? "D+" : code);
+            chip.setText(s.chip);
             chip.setGravity(Gravity.CENTER);
             chip.setPadding(6, 0, 6, 0);
             chip.setMinWidth(24);
-            chip.setBackground(round(SERVICE_COLORS[k], 0, 6));
+            chip.setBackground(round(s.color, 0, 6));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 24);
             lp.rightMargin = 5;
             chips.addView(chip, lp);
@@ -716,7 +713,7 @@ final class HeroesView extends FrameLayout {
     private void enter() {
         Item t = cardItems.get(card);
         if (t.services.isEmpty()) {
-            host.toast(t.name + " isn't on Netflix, Prime Video or Disney+ in the UK");
+            host.toast(t.name + " " + Services.notOn());
             return;
         }
         if (t.services.length() == 1) {
@@ -758,13 +755,12 @@ final class HeroesView extends FrameLayout {
     }
 
     private static String serviceName(String code) {
-        for (int i = 0; i < SERVICE_NAMES.length; i += 2) if (SERVICE_NAMES[i].equals(code)) return SERVICE_NAMES[i + 1];
-        return code;
+        String n = Services.name(code);
+        return n == null ? code : n;
     }
 
     private static int serviceColor(String code) {
-        for (int i = 0; i < SERVICE_NAMES.length; i += 2) if (SERVICE_NAMES[i].equals(code)) return SERVICE_COLORS[i / 2];
-        return Color.GRAY;
+        return Services.color(code);
     }
 
     // ------------------------------------------------------------------ the remote

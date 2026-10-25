@@ -13,16 +13,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * TMDB, live: one page of titles per request, only what streams in the UK on Netflix, Prime Video or Disney+.
+ * TMDB, live: one page of titles per request, only what streams on the configured services (Services) in the
+ * configured country.
  * Nothing is saved; the activity keeps what it fetched in memory while it is open.
  */
 final class Tmdb {
     private Tmdb() {}
 
-    static final String REGION = BuildConfig.REGION;   // set by region= in tonight/secrets.properties
-    /** TMDB provider ids in the UK: Netflix, Prime Video, Prime Video with ads, Disney+. */
-    static final int NETFLIX = 8, PRIME = 9, PRIME_ADS = 2100, DISNEY = 337;
-    static final String ALL_SERVICES = NETFLIX + "|" + PRIME + "|" + PRIME_ADS + "|" + DISNEY;
+    static final String REGION = Services.REGION;   // set by region= in tonight/secrets.properties
+    /** Every configured service's TMDB provider ids. */
+    static final String ALL_SERVICES = Services.allProviders();
 
     /** The wheel's genres. Film and TV genres have different ids on TMDB; 0 means there is no such genre for that kind. */
     static final String[] GENRES = {"Everything", "Action", "Adventure", "Animation", "Comedy", "Crime", "Documentary",
@@ -45,7 +45,8 @@ final class Tmdb {
      *   romance stays out of the action, thriller, horror, mystery, fantasy and sci-fi rows;
      * - a lead genre: TMDB lists a title's main genre first, so the row's genre must be among its first two (three for
      *   Animation, Family, History, Music, War and Western, which are usually added after the main one). 0: no check.
-     * Films have no Reality genre (its row shows documentaries) and no Kids genre (family films rated U or PG in the UK).
+     * Films have no Reality genre (its row shows documentaries) and no Kids genre (family films rated G or PG in the US,
+     * the one set of ratings TMDB has for nearly every film, wherever the viewer is).
      */
     private static final class Rule {
         final String query;
@@ -73,7 +74,7 @@ final class Tmdb {
             new Rule(g(14) + wo(CARTOONS_ROMANCE), 14, 2),                                   // Fantasy
             new Rule(g(36) + wo(CARTOONS), 36, 3),                                           // History
             new Rule(g(27) + wo(CARTOONS_ROMANCE), 27, 2),                                   // Horror
-            new Rule(g(10751) + "&certification_country=GB&certification.lte=PG", 0, 0),    // Kids
+            new Rule(g(10751) + "&certification_country=US&certification.lte=PG", 0, 0),    // Kids
             new Rule(g(10402) + wo(CARTOONS), 10402, 3),                                     // Music
             new Rule(g(9648) + wo(CARTOONS_ROMANCE), 9648, 2),                               // Mystery
             new Rule(g(99), 99, 2),                                                          // Reality
@@ -181,7 +182,7 @@ final class Tmdb {
                 .append("?watch_region=").append(REGION)
                 .append("&with_watch_providers=").append(enc(providers))
                 .append("&with_watch_monetization_types=flatrate")
-                .append("&sort_by=popularity.desc&include_adult=false&language=en-GB")
+                .append("&sort_by=popularity.desc&include_adult=false&language=").append(Services.language())
                 .append("&vote_count.gte=").append(series ? 40 : 80)
                 .append("&page=").append(page);
         if (genre > 0) u.append("&with_genres=").append(genre);
@@ -218,7 +219,7 @@ final class Tmdb {
     static void details(Title t) throws Exception {
         if (t.detailed) return;
         String append = t.series ? "aggregate_credits,images,watch/providers" : "credits,images,watch/providers";
-        JSONObject d = api("/" + (t.series ? "tv" : "movie") + "/" + t.id + "?language=en-GB&append_to_response=" + append
+        JSONObject d = api("/" + (t.series ? "tv" : "movie") + "/" + t.id + "?language=" + Services.language() + "&append_to_response=" + append
                 + "&include_image_language=null,en");
         // runtime / seasons
         if (t.series) {
@@ -277,39 +278,35 @@ final class Tmdb {
                 if (v > best) { best = v; t.logoPath = l.optString("file_path"); }
             }
         }
-        // which of the three services streams it in the UK; the first one listed wins
+        // which of the configured services streams it in the country; the first one TMDB lists wins
         JSONObject wp = d.optJSONObject("watch/providers");
         JSONObject gb = wp == null ? null : wp.optJSONObject("results");
         gb = gb == null ? null : gb.optJSONObject(REGION);
         JSONArray flat = gb == null ? null : gb.optJSONArray("flatrate");
         if (flat != null) for (int i = 0; i < flat.length() && t.service == null; i++) {
-            int id = flat.getJSONObject(i).optInt("provider_id");
-            if (id == NETFLIX) t.service = "N";
-            else if (id == DISNEY) t.service = "D";
-            else if (id == PRIME || id == PRIME_ADS) t.service = "P";
+            Services.Service s = Services.forProvider(flat.getJSONObject(i).optInt("provider_id"));
+            if (s != null) t.service = String.valueOf(s.code);
         }
         t.detailed = true;
     }
 
     /**
-     * Which of the three services stream a title in the UK right now, as codes in a fixed order ("DNP" for all
-     * three, "" for none). Blocking.
+     * Which of the configured services stream a title in the country right now, as codes in the configured order
+     * ("NPD" for all three of the defaults, "" for none). Blocking.
      */
     static String services(boolean series, int id) throws Exception {
         JSONObject d = api("/" + (series ? "tv" : "movie") + "/" + id + "/watch/providers");
         JSONObject gb = d.optJSONObject("results");
         gb = gb == null ? null : gb.optJSONObject(REGION);
-        boolean n = false, dis = false, p = false;
+        StringBuilder got = new StringBuilder();
         for (String kind : new String[]{"flatrate", "ads"}) {
             JSONArray a = gb == null ? null : gb.optJSONArray(kind);
             if (a != null) for (int i = 0; i < a.length(); i++) {
-                int pid = a.getJSONObject(i).optInt("provider_id");
-                if (pid == NETFLIX) n = true;
-                else if (pid == DISNEY) dis = true;
-                else if (pid == PRIME || pid == PRIME_ADS) p = true;
+                Services.Service s = Services.forProvider(a.getJSONObject(i).optInt("provider_id"));
+                if (s != null) got.append(s.code);
             }
         }
-        return (dis ? "D" : "") + (n ? "N" : "") + (p ? "P" : "");
+        return Services.order(got.toString());
     }
 
     /** The TMDB id for a company, keyword or person name ("company", "keyword", "person"); 0 if none. */

@@ -72,13 +72,13 @@ final class JarvisLink {
         try (android.database.Cursor c = app.getContentResolver().query(
                 android.net.Uri.parse("content://com.kartikmodi.halo.tonight.search/top?q=" + android.net.Uri.encode(q)), null, null, null, null)) {
             if (c != null && c.moveToFirst()) {
-                String title = c.getString(2), year = c.getString(3), svc = c.getString(4);
-                java.util.List<String> on = new java.util.ArrayList<>();
-                for (char k : svc.toCharArray()) on.add(k == 'N' ? "Netflix" : k == 'P' ? "Prime Video" : "Disney Plus");
-                return "I found " + title + (year.isEmpty() ? "" : ", from " + year) + ", on " + String.join(" and ", on)
+                String title = c.getString(2), year = c.getString(3);
+                int col = c.getColumnIndex("on");   // the services by name, as TONIGHT. is set up
+                String on = col >= 0 ? c.getString(col) : "";
+                return "I found " + title + (year.isEmpty() ? "" : ", from " + year) + (on.isEmpty() ? "" : ", on " + on)
                         + (c.getCount() > 1 ? ". The other matches are on your TV." : ". It's on your TV.");
             }
-            if (c != null) return "I couldn't find " + q + " on Netflix, Prime Video or Disney Plus.";
+            if (c != null) return "I couldn't find " + q + " on your streaming apps.";
         } catch (Exception e) {
             Log.w(TAG, "TONIGHT search", e);
         }
